@@ -84,7 +84,7 @@ describe('RefineAssistantPanel — preset buttons', () => {
   it('puts the Style options in their own labelled group', () => {
     renderPanel()
 
-    const styleGroup = screen.getByRole('group', { name: 'Style' })
+    const styleGroup = screen.getByRole('group', { name: 'Style (optional)' })
     REFINE_PRESETS.filter((preset) => preset.group === 'style').forEach(
       (preset) => {
         expect(

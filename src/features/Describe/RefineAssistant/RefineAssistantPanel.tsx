@@ -218,7 +218,7 @@ const RefineAssistantPanel = ({
               id={styleGroupLabelId}
               className="refine-assistant__group-label"
             >
-              Style
+              Style (optional)
             </span>
             {STYLE_PRESETS.map(renderPreset)}
           </div>
