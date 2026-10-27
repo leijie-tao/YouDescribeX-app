@@ -17,8 +17,15 @@ import {
   RefineRequestError,
   requestRefineSuggestion,
 } from './refineApi'
-import { REFINE_PRESETS } from './refinePresets'
+import { REFINE_PRESETS, RefinePresetButton } from './refinePresets'
 import { RefinePresetId, RefineSuggestion } from '@/shared/types/refine'
+
+// Leijie The edit presets render as a plain row; the Style options get their own labelled group so a
+// screen reader announces "Style" when focus enters it.
+const EDIT_PRESETS = REFINE_PRESETS.filter((preset) => preset.group === 'edit')
+const STYLE_PRESETS = REFINE_PRESETS.filter(
+  (preset) => preset.group === 'style',
+)
 
 interface Props {
   audioDescriptionId: string
@@ -54,6 +61,7 @@ const RefineAssistantPanel = ({
   // xiao1009 A clip can only be open once at a time, so its id makes the label ids unique without
   // needing React 18's useId.
   const instructionInputId = `refine-instruction-${clipId}`
+  const styleGroupLabelId = `refine-style-label-${clipId}`
 
   // xiao1009 Focus enters the panel as soon as it opens. Two reasons: a keyboard user is put on the
   // new content instead of having to tab for it, and Escape only reaches the handler below when
@@ -94,7 +102,11 @@ const RefineAssistantPanel = ({
         }
 
         setSuggestion(first)
-        setStatusMessage('Suggestion ready')
+        setStatusMessage(
+          first.unchanged
+            ? 'No changes needed. The description already fits this request.'
+            : 'Suggestion ready',
+        )
       } catch (error) {
         const message =
           error instanceof RefineRequestError
@@ -139,6 +151,33 @@ const RefineAssistantPanel = ({
     if (lastRequest) submit(lastRequest)
   }
 
+  // Leijie One preset button plus its preview. The preview is a real element referenced by
+  // aria-describedby, so it is read on keyboard focus too, not only shown on mouse hover.
+  const renderPreset = (preset: RefinePresetButton) => {
+    const descriptionId = `refine-preset-desc-${clipId}-${preset.id}`
+    return (
+      <span key={preset.id} className="refine-assistant__preset-wrap">
+        <button
+          type="button"
+          ref={preset.id === REFINE_PRESETS[0].id ? firstPresetRef : undefined}
+          className="ydx-button ydx-button--tts-violet refine-assistant__preset"
+          onClick={() => submit({ presetId: preset.id })}
+          disabled={isWorking}
+          aria-describedby={descriptionId}
+        >
+          {preset.label}
+        </button>
+        <span
+          id={descriptionId}
+          role="tooltip"
+          className="refine-assistant__tooltip"
+        >
+          {preset.description}
+        </span>
+      </span>
+    )
+  }
+
   // xiao1009 Escape closes the panel. stopPropagation keeps it from also reaching the editor's own
   // key handlers further up the tree.
   const handleKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
@@ -167,18 +206,21 @@ const RefineAssistantPanel = ({
       {!suggestion && (
         <>
           <div className="refine-assistant__presets">
-            {REFINE_PRESETS.map((preset, index) => (
-              <button
-                key={preset.id}
-                type="button"
-                ref={index === 0 ? firstPresetRef : undefined}
-                className="ydx-button ydx-button--tts-violet refine-assistant__preset"
-                onClick={() => submit({ presetId: preset.id })}
-                disabled={isWorking}
-              >
-                {preset.label}
-              </button>
-            ))}
+            {EDIT_PRESETS.map(renderPreset)}
+          </div>
+
+          <div
+            className="refine-assistant__presets refine-assistant__style-group"
+            role="group"
+            aria-labelledby={styleGroupLabelId}
+          >
+            <span
+              id={styleGroupLabelId}
+              className="refine-assistant__group-label"
+            >
+              Style
+            </span>
+            {STYLE_PRESETS.map(renderPreset)}
           </div>
 
           <div className="refine-assistant__free-text">
@@ -224,9 +266,7 @@ const RefineAssistantPanel = ({
           <div className="refine-assistant__block">
             <h6 className="refine-assistant__block-title">
               Suggestion
-              {suggestion.wordBudget
-                ? ` — aim for about ${suggestion.wordBudget} words`
-                : ''}
+              {suggestion.unchanged ? ' — no changes needed' : ''}
             </h6>
             <p className="refine-assistant__text">{suggestion.suggestion}</p>
           </div>

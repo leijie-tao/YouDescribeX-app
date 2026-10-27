@@ -44,6 +44,47 @@
   align-items: center;
 }
 
+/* Leijie The Style options sit on their own row, introduced by a small label. */
+.refine-assistant__style-group {
+  margin-top: 8px;
+}
+
+.refine-assistant__group-label {
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+/* Leijie Preset preview. It stays in the DOM, so aria-describedby always resolves; it is only
+   visually hidden until the button is hovered or focused. */
+.refine-assistant__preset-wrap {
+  position: relative;
+  display: inline-flex;
+}
+
+.refine-assistant__tooltip {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  z-index: 10;
+  width: max-content;
+  max-width: 260px;
+  padding: 6px 8px;
+  border-radius: 4px;
+  background-color: #2b2540;
+  color: #fff;
+  font-size: 0.8rem;
+  line-height: 1.3;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.refine-assistant__preset-wrap:hover .refine-assistant__tooltip,
+.refine-assistant__preset-wrap:focus-within .refine-assistant__tooltip {
+  opacity: 1;
+  visibility: visible;
+}
+
 .refine-assistant__free-text {
   margin-top: 10px;
 }

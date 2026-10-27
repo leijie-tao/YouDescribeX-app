@@ -5,10 +5,12 @@
 // xiao1009 Must stay identical to REFINE_PRESETS in api/src/prompts/refinePresets.ts: the frontend
 // only ever sends the id, and the backend answers 400 for one it does not know.
 export type RefinePresetId =
-  | 'shorten-to-fit'
-  | 'simplify'
-  | 'fix-grammar'
-  | 'keep-onscreen-text-verbatim'
+  | 'make-concise'
+  | 'polish'
+  | 'style-character-focus'
+  | 'style-action-focus'
+  | 'style-environment-focus'
+  | 'style-simple-language'
 
 export interface RefineClipInput {
   clipId: string
@@ -24,13 +26,13 @@ export interface RefineSuggestRequest {
   instruction?: string
 }
 
-// xiao1009 wordBudget only comes back for presets that work to a time budget, so the panel can show
-// the word target next to the suggestion.
+// Leijie `unchanged` is true when the AI returned the description as it was: a valid answer meaning
+// "no change needed", not an error.
 export interface RefineSuggestion {
   clipId: string
   original: string
   suggestion: string
-  wordBudget?: number
+  unchanged: boolean
 }
 
 export interface RefineSuggestResponse {
