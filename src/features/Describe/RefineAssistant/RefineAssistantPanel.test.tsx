@@ -81,6 +81,30 @@ describe('RefineAssistantPanel — preset buttons', () => {
     })
   })
 
+  it('renders one labelled row per group, in order', () => {
+    renderPanel()
+
+    const rows = screen
+      .getAllByRole('group')
+      .filter((group) => group.getAttribute('aria-labelledby'))
+    expect(
+      rows.map(
+        (row) =>
+          row.querySelector('.refine-assistant__group-label')?.textContent,
+      ),
+    ).toEqual(['Refine text', 'Style (optional)', 'Check timing'])
+    expect(
+      screen
+        .getByRole('group', { name: 'Refine text' })
+        .contains(screen.getByRole('button', { name: 'Add details' })),
+    ).toBe(true)
+    expect(
+      screen
+        .getByRole('group', { name: 'Check timing' })
+        .contains(screen.getByRole('button', { name: 'Fix timing' })),
+    ).toBe(true)
+  })
+
   it('puts the Style options in their own labelled group', () => {
     renderPanel()
 

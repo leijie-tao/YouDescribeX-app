@@ -44,8 +44,8 @@
   align-items: center;
 }
 
-/* Leijie The Style options sit on their own row, introduced by a small label. */
-.refine-assistant__style-group {
+/* Leijie One row per preset group, each introduced by a small label. */
+.refine-assistant__preset-row + .refine-assistant__preset-row {
   margin-top: 8px;
 }
 

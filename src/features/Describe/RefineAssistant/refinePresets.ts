@@ -10,7 +10,15 @@
 // on the backend, check that its description here still says what the button does.
 import { RefinePresetId } from '@/shared/types/refine'
 
-export type RefinePresetGroup = 'edit' | 'style'
+export type RefinePresetGroup = 'refine' | 'style' | 'timing'
+
+// Leijie One labelled row per group, in this order. The panel renders a row only if it has presets.
+export const REFINE_PRESET_GROUPS: { id: RefinePresetGroup; label: string }[] =
+  [
+    { id: 'refine', label: 'Refine text' },
+    { id: 'style', label: 'Style (optional)' },
+    { id: 'timing', label: 'Check timing' },
+  ]
 
 // Leijie Buttons that are shown but not wired to the backend yet. Their ids are deliberately not in
 // RefinePresetId, so the type system stops them from ever being sent as a presetId.
@@ -33,23 +41,23 @@ export const REFINE_PRESETS: RefinePresetButton[] = [
     id: 'make-concise',
     label: 'Make concise',
     description:
-      'Cuts extra details and keeps only what listeners need right now: who, what happens, and key on-screen text.',
-    group: 'edit',
+      'Cut extra details and only keep who, what happens, and key on-screen text.',
+    group: 'refine',
   },
   {
     id: 'polish',
     label: 'Polish',
     description:
-      'Rewrites sentences so they sound natural when read aloud, and fixes grammar. Keeps all information and technical terms.',
-    group: 'edit',
+      'Rewrites sentences in a natural way, and fixes grammar. Keeps all information and technical terms.',
+    group: 'refine',
   },
   // Leijie Text-only for now: the describer types the details, the AI works them in.
   {
     id: 'add-details',
     label: 'Add details',
     description:
-      'Type the details you want added in the box below, then press Add details. The AI works them into the description.',
-    group: 'edit',
+      'Type the details you want added in the box below, then press Add details.',
+    group: 'refine',
     needsInstruction: true,
   },
   // Leijie Phase 2 (refinead-button-pipeline.md section 6.5). Frontend only for now: the button is
@@ -59,35 +67,35 @@ export const REFINE_PRESETS: RefinePresetButton[] = [
     label: 'Fix timing',
     description:
       'Makes the description fit before the next dialogue: shortens it, suggests a better start time, or suggests pausing the video for it. Coming soon.',
-    group: 'edit',
+    group: 'timing',
     comingSoon: true,
   },
   {
     id: 'style-character-focus',
     label: 'Character focus',
     description:
-      'Puts the people first: who they are, their expressions, and their reactions. The facts stay the same.',
+      'Puts the people first: who they are, their expressions, and their reactions. (conversations with several people)',
     group: 'style',
   },
   {
     id: 'style-action-focus',
     label: 'Action focus',
     description:
-      'Puts the action first, in the order it happens. Trims appearance and setting details.',
+      'Puts the action first, in the order it happens. (cooking, crafts, DIY, and sports)',
     group: 'style',
   },
   {
     id: 'style-environment-focus',
     label: 'Environment focus',
     description:
-      'Puts the setting first: the place, time, lighting, and where things are. Then the action.',
+      'Puts the setting first: the place, time, lighting, and where things are. (travel, home tours, and nature documentaries)',
     group: 'style',
   },
   {
     id: 'style-simple-language',
-    label: 'Simple language',
+    label: 'Simple words',
     description:
-      'Uses everyday words and short sentences. Explains technical terms instead of removing them.',
+      'Uses everyday words and short sentences. Explains technical terms instead of removing them.(children content and beginner lessons)',
     group: 'style',
   },
 ]

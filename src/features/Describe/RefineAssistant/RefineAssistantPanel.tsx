@@ -17,15 +17,19 @@ import {
   RefineRequestError,
   requestRefineSuggestion,
 } from './refineApi'
-import { REFINE_PRESETS, RefinePresetButton } from './refinePresets'
+import {
+  REFINE_PRESETS,
+  REFINE_PRESET_GROUPS,
+  RefinePresetButton,
+} from './refinePresets'
 import { RefinePresetId, RefineSuggestion } from '@/shared/types/refine'
 
-// Leijie The edit presets render as a plain row; the Style options get their own labelled group so a
-// screen reader announces "Style" when focus enters it.
-const EDIT_PRESETS = REFINE_PRESETS.filter((preset) => preset.group === 'edit')
-const STYLE_PRESETS = REFINE_PRESETS.filter(
-  (preset) => preset.group === 'style',
-)
+// Leijie Presets render as one labelled row per group (Refine text, Style, Check timing), so a
+// screen reader announces the row's name when focus enters it.
+const PRESET_ROWS = REFINE_PRESET_GROUPS.map((group) => ({
+  ...group,
+  presets: REFINE_PRESETS.filter((preset) => preset.group === group.id),
+})).filter((row) => row.presets.length > 0)
 
 interface Props {
   audioDescriptionId: string
@@ -62,7 +66,6 @@ const RefineAssistantPanel = ({
   // xiao1009 A clip can only be open once at a time, so its id makes the label ids unique without
   // needing React 18's useId.
   const instructionInputId = `refine-instruction-${clipId}`
-  const styleGroupLabelId = `refine-style-label-${clipId}`
 
   // xiao1009 Focus enters the panel as soon as it opens. Two reasons: a keyboard user is put on the
   // new content instead of having to tab for it, and Escape only reaches the handler below when
@@ -235,23 +238,22 @@ const RefineAssistantPanel = ({
 
       {!suggestion && (
         <>
-          <div className="refine-assistant__presets">
-            {EDIT_PRESETS.map(renderPreset)}
-          </div>
-
-          <div
-            className="refine-assistant__presets refine-assistant__style-group"
-            role="group"
-            aria-labelledby={styleGroupLabelId}
-          >
-            <span
-              id={styleGroupLabelId}
-              className="refine-assistant__group-label"
-            >
-              Style (optional)
-            </span>
-            {STYLE_PRESETS.map(renderPreset)}
-          </div>
+          {PRESET_ROWS.map((row) => {
+            const labelId = `refine-group-label-${clipId}-${row.id}`
+            return (
+              <div
+                key={row.id}
+                className="refine-assistant__presets refine-assistant__preset-row"
+                role="group"
+                aria-labelledby={labelId}
+              >
+                <span id={labelId} className="refine-assistant__group-label">
+                  {row.label}
+                </span>
+                {row.presets.map(renderPreset)}
+              </div>
+            )
+          })}
 
           <div className="refine-assistant__free-text">
             <label
