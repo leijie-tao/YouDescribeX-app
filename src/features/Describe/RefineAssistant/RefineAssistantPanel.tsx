@@ -58,6 +58,7 @@ const RefineAssistantPanel = ({
 
   const acceptButtonRef = useRef<HTMLButtonElement>(null)
   const firstPresetRef = useRef<HTMLButtonElement>(null)
+  const instructionInputRef = useRef<HTMLInputElement>(null)
   // xiao1009 A clip can only be open once at a time, so its id makes the label ids unique without
   // needing React 18's useId.
   const instructionInputId = `refine-instruction-${clipId}`
@@ -151,6 +152,29 @@ const RefineAssistantPanel = ({
     if (lastRequest) submit(lastRequest)
   }
 
+  // Leijie A preset that needs the describer's text sends the box along; with an empty box it sends
+  // nothing and points the describer at the box instead.
+  const handlePresetClick = (
+    preset: RefinePresetButton,
+    presetId: RefinePresetId | undefined,
+  ) => {
+    if (!presetId) return
+    if (!preset.needsInstruction) {
+      submit({ presetId })
+      return
+    }
+    const trimmed = instruction.trim()
+    if (!trimmed) {
+      setStatusMessage('')
+      setErrorMessage(
+        `Type the details to add in the box below, then press ${preset.label} again.`,
+      )
+      instructionInputRef.current?.focus()
+      return
+    }
+    submit({ presetId, instruction: trimmed })
+  }
+
   // Leijie One preset button plus its preview. The preview is a real element referenced by
   // aria-describedby, so it is read on keyboard focus too, not only shown on mouse hover.
   const renderPreset = (preset: RefinePresetButton) => {
@@ -166,9 +190,7 @@ const RefineAssistantPanel = ({
           type="button"
           ref={preset.id === REFINE_PRESETS[0].id ? firstPresetRef : undefined}
           className="ydx-button ydx-button--tts-violet refine-assistant__preset"
-          onClick={() => {
-            if (presetId) submit({ presetId })
-          }}
+          onClick={() => handlePresetClick(preset, presetId)}
           disabled={isWorking}
           aria-disabled={preset.comingSoon ? true : undefined}
           aria-describedby={descriptionId}
@@ -240,6 +262,7 @@ const RefineAssistantPanel = ({
             </label>
             <div className="refine-assistant__free-text-row">
               <input
+                ref={instructionInputRef}
                 id={instructionInputId}
                 type="text"
                 className="refine-assistant__input"

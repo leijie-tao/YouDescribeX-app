@@ -7,6 +7,7 @@
 export type RefinePresetId =
   | 'make-concise'
   | 'polish'
+  | 'add-details'
   | 'style-character-focus'
   | 'style-action-focus'
   | 'style-environment-focus'

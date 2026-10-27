@@ -22,6 +22,8 @@ export interface RefinePresetButton {
   description: string
   group: RefinePresetGroup
   comingSoon?: boolean
+  // Leijie Sends the free-text box along with the preset, and refuses to send when the box is empty.
+  needsInstruction?: boolean
 }
 
 // xiao1009 The panel renders this array in a loop, so adding a preset is one entry here plus one
@@ -40,6 +42,15 @@ export const REFINE_PRESETS: RefinePresetButton[] = [
     description:
       'Rewrites sentences so they sound natural when read aloud, and fixes grammar. Keeps all information and technical terms.',
     group: 'edit',
+  },
+  // Leijie Text-only for now: the describer types the details, the AI works them in.
+  {
+    id: 'add-details',
+    label: 'Add details',
+    description:
+      'Type the details you want added in the box below, then press Add details. The AI works them into the description.',
+    group: 'edit',
+    needsInstruction: true,
   },
   // Leijie Phase 2 (refinead-button-pipeline.md section 6.5). Frontend only for now: the button is
   // rendered so the layout is final, but it does not send a request.

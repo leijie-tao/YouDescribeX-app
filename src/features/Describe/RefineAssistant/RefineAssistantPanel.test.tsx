@@ -125,6 +125,36 @@ describe('RefineAssistantPanel — preset buttons', () => {
   })
 })
 
+describe('RefineAssistantPanel — Add details', () => {
+  it('asks for the details instead of sending when the box is empty', () => {
+    renderPanel()
+
+    fireEvent.click(screen.getByRole('button', { name: 'Add details' }))
+
+    expect(mockedAxios.post).not.toHaveBeenCalled()
+    expect(screen.getByRole('alert').textContent).toMatch(/type the details/i)
+    expect(document.activeElement).toBe(
+      screen.getByLabelText('Or tell the AI what to change'),
+    )
+  })
+
+  it('sends the typed details along with the preset', async () => {
+    mockedAxios.post.mockResolvedValue(suggestionResponse())
+    renderPanel()
+
+    fireEvent.change(screen.getByLabelText('Or tell the AI what to change'), {
+      target: { value: '  the pot is terracotta  ' },
+    })
+    fireEvent.click(screen.getByRole('button', { name: 'Add details' }))
+
+    await waitFor(() => expect(mockedAxios.post).toHaveBeenCalledTimes(1))
+    expect(mockedAxios.post.mock.calls[0][1]).toMatchObject({
+      presetId: 'add-details',
+      instruction: 'the pot is terracotta',
+    })
+  })
+})
+
 describe('RefineAssistantPanel — coming-soon presets', () => {
   it('shows Fix timing as unavailable and sends nothing when it is clicked', () => {
     renderPanel()
