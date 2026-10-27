@@ -125,6 +125,20 @@ describe('RefineAssistantPanel — preset buttons', () => {
   })
 })
 
+describe('RefineAssistantPanel — coming-soon presets', () => {
+  it('shows Fix timing as unavailable and sends nothing when it is clicked', () => {
+    renderPanel()
+
+    const fixTiming = screen.getByRole('button', { name: 'Fix timing' })
+    expect(fixTiming.getAttribute('aria-disabled')).toBe('true')
+
+    fireEvent.click(fixTiming)
+
+    expect(mockedAxios.post).not.toHaveBeenCalled()
+    expect(screen.getByRole('status').textContent).toBe('')
+  })
+})
+
 describe('RefineAssistantPanel — free text', () => {
   it('keeps Send disabled until the box has non-blank text', () => {
     renderPanel()

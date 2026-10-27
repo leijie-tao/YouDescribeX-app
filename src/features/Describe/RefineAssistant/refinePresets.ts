@@ -12,11 +12,16 @@ import { RefinePresetId } from '@/shared/types/refine'
 
 export type RefinePresetGroup = 'edit' | 'style'
 
+// Leijie Buttons that are shown but not wired to the backend yet. Their ids are deliberately not in
+// RefinePresetId, so the type system stops them from ever being sent as a presetId.
+export type PlannedPresetId = 'fix-timing'
+
 export interface RefinePresetButton {
-  id: RefinePresetId
+  id: RefinePresetId | PlannedPresetId
   label: string
   description: string
   group: RefinePresetGroup
+  comingSoon?: boolean
 }
 
 // xiao1009 The panel renders this array in a loop, so adding a preset is one entry here plus one
@@ -35,6 +40,16 @@ export const REFINE_PRESETS: RefinePresetButton[] = [
     description:
       'Rewrites sentences so they sound natural when read aloud, and fixes grammar. Keeps all information and technical terms.',
     group: 'edit',
+  },
+  // Leijie Phase 2 (refinead-button-pipeline.md section 6.5). Frontend only for now: the button is
+  // rendered so the layout is final, but it does not send a request.
+  {
+    id: 'fix-timing',
+    label: 'Fix timing',
+    description:
+      'Makes the description fit before the next dialogue: shortens it, suggests a better start time, or suggests pausing the video for it. Coming soon.',
+    group: 'edit',
+    comingSoon: true,
   },
   {
     id: 'style-character-focus',

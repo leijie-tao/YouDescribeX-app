@@ -80,6 +80,12 @@
   pointer-events: none;
 }
 
+/* Leijie Coming-soon presets look inactive but keep their hover preview. */
+.refine-assistant__preset[aria-disabled='true'] {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
 .refine-assistant__preset-wrap:hover .refine-assistant__tooltip {
   opacity: 1;
   visibility: visible;

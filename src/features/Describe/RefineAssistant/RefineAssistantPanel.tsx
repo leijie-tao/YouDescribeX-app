@@ -155,14 +155,22 @@ const RefineAssistantPanel = ({
   // aria-describedby, so it is read on keyboard focus too, not only shown on mouse hover.
   const renderPreset = (preset: RefinePresetButton) => {
     const descriptionId = `refine-preset-desc-${clipId}-${preset.id}`
+    // Leijie A coming-soon button uses aria-disabled rather than disabled, so it stays focusable and
+    // screen readers can still reach its description, but clicking it does nothing.
+    const presetId = preset.comingSoon
+      ? undefined
+      : (preset.id as RefinePresetId)
     return (
       <span key={preset.id} className="refine-assistant__preset-wrap">
         <button
           type="button"
           ref={preset.id === REFINE_PRESETS[0].id ? firstPresetRef : undefined}
           className="ydx-button ydx-button--tts-violet refine-assistant__preset"
-          onClick={() => submit({ presetId: preset.id })}
+          onClick={() => {
+            if (presetId) submit({ presetId })
+          }}
           disabled={isWorking}
+          aria-disabled={preset.comingSoon ? true : undefined}
           aria-describedby={descriptionId}
         >
           {preset.label}
