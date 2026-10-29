@@ -179,17 +179,39 @@ describe('RefineAssistantPanel — Add details', () => {
   })
 })
 
-describe('RefineAssistantPanel — coming-soon presets', () => {
-  it('shows Fix timing as unavailable and sends nothing when it is clicked', () => {
-    renderPanel()
+describe('RefineAssistantPanel — Fix timing', () => {
+  it('shows the reason and the suggested change, and accepting only hands over the text', async () => {
+    mockedAxios.post.mockResolvedValue(
+      suggestionResponse({
+        suggestion: CURRENT_TEXT,
+        unchanged: true,
+        timing: { estimatedSeconds: 4, availableSeconds: 1 },
+        timingChange: { startTime: 12.5 },
+        reason: 'Too long for the gap.',
+      }),
+    )
+    const { onAccept } = renderPanel()
 
-    const fixTiming = screen.getByRole('button', { name: 'Fix timing' })
-    expect(fixTiming.getAttribute('aria-disabled')).toBe('true')
+    fireEvent.click(screen.getByRole('button', { name: 'Fix timing' }))
 
-    fireEvent.click(fixTiming)
+    await waitFor(() =>
+      expect(screen.getByText('Too long for the gap.')).toBeTruthy(),
+    )
+    expect(mockedAxios.post.mock.calls[0][1]).toMatchObject({
+      presetId: 'fix-timing',
+    })
+    expect(screen.getByText(/Suggested start time: 12.50 s/)).toBeTruthy()
+    expect(screen.getByText(/text unchanged/)).toBeTruthy()
+    expect(screen.getByRole('status').textContent).toBe(
+      'Timing suggestion ready',
+    )
 
-    expect(mockedAxios.post).not.toHaveBeenCalled()
-    expect(screen.getByRole('status').textContent).toBe('')
+    fireEvent.click(screen.getByRole('button', { name: 'Accept suggestion' }))
+
+    expect(onAccept).toHaveBeenCalledWith(CURRENT_TEXT)
+    expect(screen.getByRole('status').textContent).toMatch(
+      /apply the suggested timing change/i,
+    )
   })
 })
 

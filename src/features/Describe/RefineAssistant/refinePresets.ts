@@ -20,16 +20,11 @@ export const REFINE_PRESET_GROUPS: { id: RefinePresetGroup; label: string }[] =
     { id: 'timing', label: 'Check timing' },
   ]
 
-// Leijie Buttons that are shown but not wired to the backend yet. Their ids are deliberately not in
-// RefinePresetId, so the type system stops them from ever being sent as a presetId.
-export type PlannedPresetId = 'fix-timing'
-
 export interface RefinePresetButton {
-  id: RefinePresetId | PlannedPresetId
+  id: RefinePresetId
   label: string
   description: string
   group: RefinePresetGroup
-  comingSoon?: boolean
   // Leijie Sends the free-text box along with the preset, and refuses to send when the box is empty.
   needsInstruction?: boolean
 }
@@ -60,15 +55,13 @@ export const REFINE_PRESETS: RefinePresetButton[] = [
     group: 'refine',
     needsInstruction: true,
   },
-  // Leijie Phase 2 (refinead-button-pipeline.md section 6.5). Frontend only for now: the button is
-  // rendered so the layout is final, but it does not send a request.
+  // Leijie refinead-button-pipeline.md section 6.5. Its timing suggestion is shown, never applied.
   {
     id: 'fix-timing',
     label: 'Fix timing',
     description:
-      'Makes the description fit before the next dialogue: shortens it, suggests a better start time, or suggests pausing the video for it. Coming soon.',
+      'Makes the description fit before the next dialogue: shortens it, suggests a better start time, or suggests pausing the video for it.',
     group: 'timing',
-    comingSoon: true,
   },
   {
     id: 'style-character-focus',

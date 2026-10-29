@@ -8,6 +8,7 @@ export type RefinePresetId =
   | 'make-concise'
   | 'polish'
   | 'add-details'
+  | 'fix-timing'
   | 'style-character-focus'
   | 'style-action-focus'
   | 'style-environment-focus'
@@ -34,6 +35,20 @@ export interface RefineSuggestion {
   original: string
   suggestion: string
   unchanged: boolean
+  // Leijie Fix timing only. timingChange is a suggestion the describer applies in the editor.
+  timing?: RefineTiming
+  timingChange?: RefineTimingChange
+  reason?: string
+}
+
+export interface RefineTiming {
+  estimatedSeconds: number
+  availableSeconds?: number
+}
+
+export interface RefineTimingChange {
+  startTime?: number
+  track?: 'inline' | 'extended'
 }
 
 export interface RefineSuggestResponse {

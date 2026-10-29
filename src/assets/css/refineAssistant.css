@@ -80,10 +80,17 @@
   pointer-events: none;
 }
 
-/* Leijie Coming-soon presets look inactive but keep their hover preview. */
-.refine-assistant__preset[aria-disabled='true'] {
-  opacity: 0.55;
-  cursor: not-allowed;
+/* Leijie Fix timing: the suggested start time or playback type, and how to apply it. */
+.refine-assistant__timing-change {
+  margin: 4px 0 0;
+  padding-left: 18px;
+  font-size: 0.9rem;
+}
+
+.refine-assistant__hint {
+  margin: 4px 0 0;
+  font-size: 0.85rem;
+  font-style: italic;
 }
 
 .refine-assistant__preset-wrap:hover .refine-assistant__tooltip {

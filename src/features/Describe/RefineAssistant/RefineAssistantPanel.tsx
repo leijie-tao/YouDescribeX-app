@@ -107,7 +107,9 @@ const RefineAssistantPanel = ({
 
         setSuggestion(first)
         setStatusMessage(
-          first.unchanged
+          first.timingChange
+            ? 'Timing suggestion ready'
+            : first.unchanged
             ? 'No changes needed. The description already fits this request.'
             : 'Suggestion ready',
         )
@@ -138,8 +140,11 @@ const RefineAssistantPanel = ({
     onAccept(suggestion.suggestion)
     setSuggestion(null)
     setErrorMessage('')
+    // Leijie Accept never writes anything; a timing change is applied by hand and saved with the clip.
     setStatusMessage(
-      'Suggestion inserted into the description. Use TTS Record to save it.',
+      suggestion.timingChange
+        ? 'Suggestion inserted into the description. Apply the suggested timing change in the editor, then use TTS Record to save it.'
+        : 'Suggestion inserted into the description. Use TTS Record to save it.',
     )
     onFocusTrigger()
   }
@@ -157,11 +162,8 @@ const RefineAssistantPanel = ({
 
   // Leijie A preset that needs the describer's text sends the box along; with an empty box it sends
   // nothing and points the describer at the box instead.
-  const handlePresetClick = (
-    preset: RefinePresetButton,
-    presetId: RefinePresetId | undefined,
-  ) => {
-    if (!presetId) return
+  const handlePresetClick = (preset: RefinePresetButton) => {
+    const presetId = preset.id
     if (!preset.needsInstruction) {
       submit({ presetId })
       return
@@ -182,20 +184,14 @@ const RefineAssistantPanel = ({
   // aria-describedby, so it is read on keyboard focus too, not only shown on mouse hover.
   const renderPreset = (preset: RefinePresetButton) => {
     const descriptionId = `refine-preset-desc-${clipId}-${preset.id}`
-    // Leijie A coming-soon button uses aria-disabled rather than disabled, so it stays focusable and
-    // screen readers can still reach its description, but clicking it does nothing.
-    const presetId = preset.comingSoon
-      ? undefined
-      : (preset.id as RefinePresetId)
     return (
       <span key={preset.id} className="refine-assistant__preset-wrap">
         <button
           type="button"
           ref={preset.id === REFINE_PRESETS[0].id ? firstPresetRef : undefined}
           className="ydx-button ydx-button--tts-violet refine-assistant__preset"
-          onClick={() => handlePresetClick(preset, presetId)}
+          onClick={() => handlePresetClick(preset)}
           disabled={isWorking}
-          aria-disabled={preset.comingSoon ? true : undefined}
           aria-describedby={descriptionId}
         >
           {preset.label}
@@ -299,10 +295,44 @@ const RefineAssistantPanel = ({
           <div className="refine-assistant__block">
             <h6 className="refine-assistant__block-title">
               Suggestion
-              {suggestion.unchanged ? ' — no changes needed' : ''}
+              {suggestion.unchanged
+                ? suggestion.timingChange
+                  ? ' — text unchanged'
+                  : ' — no changes needed'
+                : ''}
             </h6>
             <p className="refine-assistant__text">{suggestion.suggestion}</p>
           </div>
+          {suggestion.reason && (
+            <div className="refine-assistant__block">
+              <h6 className="refine-assistant__block-title">Timing</h6>
+              <p className="refine-assistant__text">{suggestion.reason}</p>
+              {suggestion.timingChange && (
+                <>
+                  <ul className="refine-assistant__timing-change">
+                    {suggestion.timingChange.startTime != null && (
+                      <li>
+                        Suggested start time:{' '}
+                        {suggestion.timingChange.startTime.toFixed(2)} s
+                      </li>
+                    )}
+                    {suggestion.timingChange.track && (
+                      <li>
+                        Suggested playback:{' '}
+                        {suggestion.timingChange.track === 'inline'
+                          ? 'inline (plays over the video)'
+                          : 'extended (the video pauses)'}
+                      </li>
+                    )}
+                  </ul>
+                  <p className="refine-assistant__hint">
+                    Accept only updates the text. Change the start time or
+                    playback type in the editor yourself, then save the clip.
+                  </p>
+                </>
+              )}
+            </div>
+          )}
           <div className="refine-assistant__result-actions">
             <button
               type="button"
