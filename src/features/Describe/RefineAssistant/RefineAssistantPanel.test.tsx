@@ -215,6 +215,25 @@ describe('RefineAssistantPanel — Fix timing', () => {
   })
 })
 
+describe('RefineAssistantPanel — too short for a Style option', () => {
+  it('shows the reason as a note and in the status', async () => {
+    const reason =
+      'The description is too short for a style change: there is nothing to rearrange.'
+    mockedAxios.post.mockResolvedValue(
+      suggestionResponse({ suggestion: CURRENT_TEXT, unchanged: true, reason }),
+    )
+    renderPanel()
+
+    fireEvent.click(screen.getByRole('button', { name: 'Character focus' }))
+
+    await waitFor(() =>
+      expect(screen.getByRole('status').textContent).toBe(reason),
+    )
+    expect(screen.getByText('Note')).toBeTruthy()
+    expect(screen.queryByText('Timing')).toBeNull()
+  })
+})
+
 describe('RefineAssistantPanel — free text', () => {
   it('keeps Send disabled until the box has non-blank text', () => {
     renderPanel()

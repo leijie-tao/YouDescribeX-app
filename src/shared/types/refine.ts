@@ -36,6 +36,7 @@ export interface RefineSuggestion {
   suggestion: string
   unchanged: boolean
   // Leijie Fix timing only. timingChange is a suggestion the describer applies in the editor.
+  // reason also comes with a Style option skipped because the description is too short.
   timing?: RefineTiming
   timingChange?: RefineTimingChange
   reason?: string

@@ -110,7 +110,8 @@ const RefineAssistantPanel = ({
           first.timingChange
             ? 'Timing suggestion ready'
             : first.unchanged
-            ? 'No changes needed. The description already fits this request.'
+            ? first.reason ??
+              'No changes needed. The description already fits this request.'
             : 'Suggestion ready',
         )
       } catch (error) {
@@ -305,7 +306,10 @@ const RefineAssistantPanel = ({
           </div>
           {suggestion.reason && (
             <div className="refine-assistant__block">
-              <h6 className="refine-assistant__block-title">Timing</h6>
+              {/* Leijie A reason without timing data is a text preset that was skipped (too short). */}
+              <h6 className="refine-assistant__block-title">
+                {suggestion.timing ? 'Timing' : 'Note'}
+              </h6>
               <p className="refine-assistant__text">{suggestion.reason}</p>
               {suggestion.timingChange && (
                 <>
